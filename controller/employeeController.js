@@ -10,25 +10,13 @@ const Employee = require('../models/employee.model');
 
 //getting all list of employees from db (GET)
 router.get('/', async(req, res) => {
-    try{
-
-       await Employee.find((err, data) => {
-        if(err)
-        {
-            res.status(404);
-            res.json({
-                valid : false,
-                msg : "No Employees Found! :-("
-            });
-        }
-        else
-        {
-            res.json({
-                valid : true,
-                data
-            })
-        }
-       })
+    try
+    {
+        const data = await Employee.find();
+        res.json({
+            valid : true,
+            data
+        });
 
     }
     catch(err)
@@ -54,23 +42,11 @@ router.post('/', async(req, res) => {
             city : req.body.city  
           })
 
-        await newData.save((err,data) => {
-            if(err)
-            {
-                res.status(400);
-                res.json({
-                    valid : false,
-                    msg : "Error, Employee Not Inserted"
-                })
-            }
-            else
-            {
-                res.json({
-                    valid : true,
-                    data
-                })
-            }
-        })
+          const data = await newData.save();
+          res.json({
+            valid : true,
+            data
+          });
         
     }
     catch(err)
@@ -86,25 +62,15 @@ router.post('/', async(req, res) => {
 //getting only single employee by employeeID (GET)
 router.get('/:id', async(req, res) => {
     
-    try{
+    try
+    {
+        
+        const data = await Employee.findById(req.params.id);
+        res.json({
+            valid : true,
+            data
+        });
 
-        await Employee.findById(req.params.id, (err, employeeData) => {
-            if(err)
-            {
-                res.status(404);
-                res.json({
-                    valid : false,
-                    msg : `Sorry :-( User ${req.params.id} Not in Our database`
-                });
-            }
-            else
-            {
-                res.json({
-                    valid : true,
-                    employeeData
-                });
-            }
-        })
     }
     catch(err) 
     {
@@ -117,30 +83,17 @@ router.get('/:id', async(req, res) => {
 });
 
 //Updating fullname of existing employee in DB by employeeID (PATCH)
-//hear im updating only fullname just to understand.
+//here im updating only fullname just to understand.
 router.patch('/:id', async(req, res) => {
     try{
 
-        await Employee.findByIdAndUpdate(req.params.id, (err, data) =>{
-            if(err)
-            {
-                res.status(400);
-                res.json({
-                    valid : false,
-                    msg : err
-                })
-            }
-            else
-            {
-                const patchData = Employee.findByIdAndUpdate(req.params.id);
-                patchData.fullName = req.body.fullName;
-                const updatedData = patchData.save();
-                res.json({
-                    valid : true,
-                    updatedData
-                })
-            }
-        })
+        const patchData = await Employee.findById(req.params.id);
+        patchData.fullName = req.body.fullName;
+        const updateData = await patchData.save();
+        res.json({ 
+            valid : true,
+            updateData
+        });
 
     }
     catch( err )
@@ -155,25 +108,13 @@ router.patch('/:id', async(req, res) => {
 
 //deleting single employee by emploeeId (DELETE)
 router.delete('/:id', async(req, res) => {
-    try{
-        const deleteEmployee = await Employee.findById(req.params.id);
-
-        if(deleteEmployee == null)
-        {
-            res.status(404);
-            res.json({
-                valid : false,
-                msg : `Sorry :-( User ${req.params.id} Not in Our database`
-            })
-        }
-        else
-        {
-            const empDelete = await Employee.deleteOne(req.params.id);
-            res.json({
-                valid : true,
-                msg : `Hoolaa :-) User ${req.params.id} employee deleted success`
-            });
-        }
+    try
+    {
+        await Employee.findByIdAndDelete(req.params.id);
+        res.json({
+            valid : true,
+            msg : `Hoolaa :-) User ${req.params.id} employee deleted success`
+        });
 
     }
     catch ( err )

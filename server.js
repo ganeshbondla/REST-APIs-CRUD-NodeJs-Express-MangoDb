@@ -10,7 +10,7 @@ var app = express();
 
 //initiated port to server with listen function (http://127.0.0.1/3000)
 app.listen(3000, () => {
-    console.log("Server Loding Success on Port : 3000");
+    console.log("Server Loading Success on Port : 3000");
 });
 
 //response type from api
